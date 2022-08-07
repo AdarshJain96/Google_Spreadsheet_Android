@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -28,8 +29,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class ListItem extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -37,6 +44,9 @@ public class ListItem extends AppCompatActivity implements AdapterView.OnItemCli
     SimpleAdapter adapter;
     ProgressDialog loading;
     EditText editSearchItem;
+
+    DateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy");
+    DateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -114,8 +124,14 @@ public class ListItem extends AppCompatActivity implements AdapterView.OnItemCli
                 String comment1 = jo.getString("comment1");
                 String comment2 = jo.getString("comment2");
 
+                inputFormat.setTimeZone(TimeZone.getTimeZone("IST"));
+                Date dates = inputFormat.parse(date);
+                String outputText = outputFormat.format(dates);
+
+                Log.v("---------------------------->",outputText);
+
                 HashMap<String, String> item = new HashMap<>();
-                item.put("date",date);
+                item.put("date",outputText);
                 item.put("itemId", itemId);
                 item.put("phone",phoneNo);
                 item.put("itemName", itemName);
@@ -133,7 +149,7 @@ public class ListItem extends AppCompatActivity implements AdapterView.OnItemCli
 
 
             }
-        } catch (JSONException e) {
+        } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
 
